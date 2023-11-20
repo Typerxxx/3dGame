@@ -6,15 +6,15 @@
     <div id="user-interface">
         <img id="restart-btn" src="assets/restart.png" alt="" class="a-pos">
         <img id="coin-img" src="assets/coin.png" class="a-pos" alt="">
-        <p id="coin-score" class="a-pos">0</p>
+        <p id="coin-score" class="a-pos text-gradient">0</p>
         <div id="play-screen">
-            <p id="score" class="a-pos">0</p>
+            <p id="score" class="a-pos text-gradient">0</p>
         </div>
         <div id="game-over-screen">
-            <p id="game-over-info" class="game-over-p">GAME OVER</p>
-            <p id="best-score" class="game-over-p">BEST: 120</p>
-            <p id="now-score" class="game-over-p">NOW: 10</p>
-            <p id="tap-info" class="game-over-p">Tap to restart</p>
+            <p id="game-over-info" class="game-over-p text-gradient">GAME OVER</p>
+            <p id="best-score" class="game-over-p text-gradient">BEST: 120</p>
+            <p id="now-score" class="game-over-p text-gradient">NOW: 10</p>
+            <p id="tap-info" class="game-over-p text-gradient">Tap to restart</p>
         </div>
     </div>
     <style>
@@ -38,11 +38,18 @@
             top:3vh;
             right:2vh;
             height: 6vh;
+            opacity: 0.9;
         }
         #coin-score{
             top:-7vh;
             right: 10vh;
             font-size: 8vh;
+        }
+        .text-gradient{
+            background-image: linear-gradient(#ff4885,60% ,#000b6b);
+            color:transparent;
+            background-clip: text;
+            -webkit-background-clip: text;
         }
         #score{
             top: 10vh;
@@ -189,7 +196,7 @@
             scene,
             (meshArray) => {
                 let coin = meshArray[0];
-                coin.scaling = new BABYLON.Vector3(0.08, 0.08, 0.08);
+                coin.scaling = new BABYLON.Vector3(0.06, 0.06, 0.06);
                 coin.position = pos;
                 shadowGenerator.addShadowCaster(coin);
                 coin.receiveShadows = true;
@@ -200,15 +207,32 @@
         let lastRand = 0;
         let boxArray = [];
         let pointArray = [];
+        let colorsArray = [
+            [0.1,0.2,0.35],
+            [0.15,0.25,0.4],
+            [0.2,0.3,0.45],
+            [0.25,0.35,0.5],
+            [0.3,0.4,0.55]
+        ]
+        let colorPos = 0;
+        let colorDir = 1;
         const createBox = (xPos, zPos) => {
-                let box = new BABYLON.MeshBuilder.CreateBox('box', {
-                    width:2,
-                    height:1,
-                    depth:1
-                })
-                box.position = new BABYLON.Vector3(xPos,0.6,zPos+4);
+                let box = new BABYLON.MeshBuilder.CreateCylinder('cone', {
+                    //diameterTop:0,
+                    //diameterBottom: 1.5,
+                    diameter: 1.5,
+                    height:1.8,
+                    arc:0.5,
+                    enclose:true
+                }, scene)
+                box.position = new BABYLON.Vector3(xPos,0,zPos+4);
                 box.material = new BABYLON.StandardMaterial('material',scene);
-                box.material.emissiveColor = new BABYLON.Color3(0.5,0.5,0.5);
+                box.material.emissiveColor = new BABYLON.Color3(
+                    colorsArray[colorPos][0],
+                    colorsArray[colorPos][1],
+                    colorsArray[colorPos][2]
+
+                    );
                 box.physicsImpostor = new BABYLON.PhysicsImpostor(
                     box,
                     BABYLON.PhysicsImpostor.BoxImpostor,
@@ -220,6 +244,10 @@
                 shadowGenerator.getShadowMap().renderList.push(box);
                 box.receiveShadows = true;
                 boxArray.push(box);
+                box.rotate(new BABYLON.Vector3(0,0,1),Math.PI*0.5,BABYLON.Space.WORLD)
+                box.rotate(new BABYLON.Vector3(1,0,0),Math.PI*0.5,BABYLON.Space.WORLD)
+                box.hasVertexAlpha = true;
+                box.visibility = 0.9;
             }
         const createBoxRow = (zPos) => {    
             let rand = Math.floor(Math.random()*3);
@@ -230,17 +258,20 @@
                 for(let i = 0; i < 3; i++){
                     if( i === rand){
                         if(Math.random()<0.5){
-                        createCoin(new BABYLON.Vector3((i*2)-2, 1, zPos+4))
+                        createCoin(new BABYLON.Vector3((i*2)-2, 0.65, zPos+4))
                         }
                         pointArray.push(new BABYLON.Vector3((i*2)-2, 1, zPos+4));
                         continue;  
                     } 
                     createBox((i*2)-2,zPos)
                 }
+                if(colorPos >= colorsArray.length - 1) colorDir = -1;
+                if(colorPos <= 0) colorDir = 1;
+                colorPos+=colorDir;
         }
         
         
-        let ball = new BABYLON.MeshBuilder.CreateSphere('sphere', {diameter:1},scene);
+        let ball = new BABYLON.MeshBuilder.CreateSphere('sphere', {diameter:0.8},scene);
         ball.position.y = 3.6;
         let ballMaterial = new BABYLON.StandardMaterial('material',scene);
         ballMaterial.emissiveTexture = new BABYLON.Texture('assets/ball.png')
@@ -257,7 +288,7 @@
             },
             scene
         )
-        for(let i = 0; i < 6; i++){
+        for(let i = 0; i < 10; i++){
             createPlatform(i*6);
             if(i === 0 ){
                 continue;
@@ -321,7 +352,6 @@
                     playScreen.style.display = 'none';
                     nowScore.innerText = "NOW: " + score;
                     saveBestScore();
-                    
                 }
             }
             for(let i = 0; i < coinArray.length; i++){
@@ -338,7 +368,7 @@
                     nextPoint = pointArray[i+1].x
                     pointArray.splice(i,1);
                     scoreInfo.innerText = ++score;
-                    if(pointArray.length<=4){
+                    if(pointArray.length<=8){
                         newRoadBlock((pointArray[pointArray.length-1].z+2)/6);
                     }
                 }
@@ -390,6 +420,20 @@
         })
 
         window.addEventListener("touchend", ()=>{
+            if(lastPoint > nextPoint){
+                //to the left
+                ball.translate(new BABYLON.Vector3(-2,0,0),1,BABYLON.Space.WORLD);
+                
+                
+            }
+            else if(lastPoint < nextPoint){
+                //to the right
+                ball.translate(new BABYLON.Vector3(2,0,0),1,BABYLON.Space.WORLD);
+            }
+            //ball.physicsImpostor.setLinearVelocity(new BABYLON.Vector3(0,0,0));
+            //ball.physicsImpostor.setAngularVelocity(new BABYLON.Vector3(0,0,0));
+        })
+        window.addEventListener("keydown", ()=>{
             if(lastPoint > nextPoint){
                 //to the left
                 ball.translate(new BABYLON.Vector3(-2,0,0),1,BABYLON.Space.WORLD);
