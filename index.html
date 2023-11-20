@@ -64,7 +64,7 @@
         }
 
         #game-over-info{
-            top: 10vh;
+            top: 0vh;
             font-size: 10vh;
         }
 
@@ -147,7 +147,7 @@
         waterMaterial.addToRenderList(ground);
 
         //createting camera
-        let camera = new BABYLON.FreeCamera('camera', new BABYLON.Vector3(0,5,-15),scene);
+        let camera = new BABYLON.FreeCamera('camera', new BABYLON.Vector3(0,8,-15),scene);
         camera.setTarget(new BABYLON.Vector3(0,0,0));
         const light = new BABYLON.PointLight("light", new BABYLON.Vector3(10, 10, 0));
         light.intensity = 0.15;
