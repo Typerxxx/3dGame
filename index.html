@@ -1,5 +1,6 @@
 <head>
     <link rel="manifest" href="manifest.webmanifest">
+    <meta name="viewport" content="uset-scalable=no">
 </head>
 <body>
     <canvas id="render-canvas"></canvas>
@@ -7,6 +8,10 @@
         <img id="restart-btn" src="assets/restart.png" alt="" class="a-pos">
         <img id="coin-img" src="assets/coin.png" class="a-pos" alt="">
         <p id="coin-score" class="a-pos text-gradient">0</p>
+        <div id="nav-bar">
+            <img src="assets/shop/shop-icon.png" id="shop-icon" alt="">
+            <img id="back-icon" src="assets/shop/back-icon.png" alt="">
+        </div>
         <div id="play-screen">
             <p id="score" class="a-pos text-gradient">0</p>
         </div>
@@ -25,6 +30,12 @@
             height: 100vh;
             font-family: 'Black Ops One', cursive;
             user-select: none;
+        }
+        #render-canvas{
+            outline: none;
+        }
+        body{
+            position: fixed;
         }
         .a-pos{
             position: absolute;
@@ -91,7 +102,19 @@
             animation-duration:2s;
             animation-iteration-count: infinite;
         }
-
+        /* shop screen */
+        #nav-bar, #shop-icon, #back-icon{
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        #shop-icon, #back-icon{
+            width: 6vh;
+            padding: 1vh;
+        }
+        #back-icon{
+            display: none;
+        }
         /*Animations*/
         @keyframes tap_info_anim{
             from{
@@ -222,8 +245,8 @@
                     //diameterBottom: 1.5,
                     diameter: 1.5,
                     height:1.8,
-                    arc:0.5,
-                    enclose:true
+                    //arc:0.5,
+                    //enclose:true
                 }, scene)
                 box.position = new BABYLON.Vector3(xPos,0,zPos+4);
                 box.material = new BABYLON.StandardMaterial('material',scene);
@@ -245,7 +268,6 @@
                 box.receiveShadows = true;
                 boxArray.push(box);
                 box.rotate(new BABYLON.Vector3(0,0,1),Math.PI*0.5,BABYLON.Space.WORLD)
-                box.rotate(new BABYLON.Vector3(1,0,0),Math.PI*0.5,BABYLON.Space.WORLD)
                 box.hasVertexAlpha = true;
                 box.visibility = 0.9;
             }
@@ -299,6 +321,8 @@
         
         
         //Algorithms
+        let shopIcon = document.getElementById('shop-icon')
+        let backIcon = document.getElementById('back-icon')
         let restartBtn = window.document.getElementById('restart-btn')
         let scoreInfo = window.document.getElementById('score');
         let score = 0;
@@ -389,6 +413,16 @@
         restartBtn.addEventListener('click', ()=>{
             window.location.reload();
             
+        })
+
+        shopIcon.addEventListener('click',()=>{
+            shopIcon.style.display = 'none';
+            backIcon.style.display = 'block';
+        })
+
+        backIcon.addEventListener('click',()=>{
+            backIcon.style.display = 'none';
+            shopIcon.style.display = 'block';
         })
         window.addEventListener('touchstart',(e)=>{
             
