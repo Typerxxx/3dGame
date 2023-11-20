@@ -1,0 +1,13 @@
+{
+    "name": "3d game",
+    "start_url": "index.html",
+    "display": "fullscreen",
+    "orientation": "portrait",
+    "icons":[
+        {
+            "src":"assets/3d.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
