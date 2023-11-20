@@ -345,6 +345,7 @@
             }
 
             skybox.position.z = ball.getAbsolutePosition().z;
+            ball.rotate(BABYLON.Axis.X, Math.PI*0.06);
             waterGround.position.z = ball.getAbsolutePosition().z;
             ground.position.z = ball.getAbsolutePosition().z+13;
             camera.position.z = ball.getAbsolutePosition().z-12;
